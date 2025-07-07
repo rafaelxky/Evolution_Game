@@ -2,7 +2,7 @@
   {
     "id": 1,
     "diet": "Vegetarian",
-    "hunger_regen": 55,
+    "hunger_regen": 50,
     "hunger_degen": 32,
     "speed": 85,
     "start_pop": 1
@@ -10,7 +10,7 @@
   {
     "id": 2,
     "diet": "Carnivore",
-    "hunger_regen": 70,
+    "hunger_regen": 72,
     "hunger_degen": 80,
     "speed": 17,
     "start_pop": 6
@@ -34,15 +34,15 @@
   {
     "id": 5,
     "diet": "Carnivore",
-    "hunger_regen": 74,
-    "hunger_degen": 67,
+    "hunger_regen": 67,
+    "hunger_degen": 64,
     "speed": 37,
     "start_pop": 4
   },
   {
     "id": 6,
     "diet": "Carnivore",
-    "hunger_regen": 93,
+    "hunger_regen": 89,
     "hunger_degen": 40,
     "speed": 36,
     "start_pop": 9
@@ -58,15 +58,15 @@
   {
     "id": 8,
     "diet": "Omnivore",
-    "hunger_regen": 102,
+    "hunger_regen": 104,
     "hunger_degen": 44,
     "speed": 73,
     "start_pop": 4
   },
   {
     "id": 9,
-    "diet": "Omnivore",
-    "hunger_regen": 58,
+    "diet": "Vegetarian",
+    "hunger_regen": 55,
     "hunger_degen": 19,
     "speed": 95,
     "start_pop": 3

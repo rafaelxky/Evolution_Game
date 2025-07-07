@@ -3,6 +3,10 @@ name = "HelloRust"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "evo_sim"
+path = "src/main.rs"
+
 [dependencies]
 rand = "0.9.1"
 colored = "3.0.0"
