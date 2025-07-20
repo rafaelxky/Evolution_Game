@@ -14,8 +14,8 @@ mod species_structs;
 use species_structs::*;
 mod rng;
 use rng::*;
-mod species_handler;
-use species_handler::*;
+mod game;
+use game::*;
 
 use crate::diets::Diet;
 use crate::biomes::Biomes;
@@ -25,12 +25,14 @@ mod biomes;
 mod status;
 mod animal_struct;
 mod diets;
+use crate::animal_struct::Animal;
 
 static CYCLES: Mutex<u32> = Mutex::new(0);
 
 fn main() {
-let species = pop_species_from_seed(specie_from_file("species.json"));
-let biome = Biomes::get_random();
+//let species = pop_species_from_seed(specie_from_file("species.json"));
+
+let species: Vec<Rc<RefCell<Specie>>> = Specie::pop_species(random(1, 10) as u32);
 
 let cloned_species: Vec<Specie> = species.iter()
     .map(|specie| specie.borrow().clone())
@@ -40,7 +42,9 @@ write_to_file("species.json", &serde_json::to_string_pretty(&cloned_species).unw
 println!("{}", serde_json::to_string_pretty(&cloned_species).unwrap());
 
     let mut animals: Vec<Rc<RefCell<Animal>>> = pop_animals(species);
+
     print_animals(animals.clone());
+
     play(animals.clone());
     print_animals(animals.clone());
     println!("Cycles: {}", CYCLES.lock().unwrap());
@@ -175,37 +179,4 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 }
 
 
-fn pop_species(ammount: u32) -> Vec<Rc<RefCell<Specie>>>{
-    let mut species: Vec<Rc<RefCell<Specie>>> = Vec::new();
-    for i in 1..=ammount {
-        species.push(Rc::from(RefCell::new(Specie::random(i))));
-    }
-    return species;
-}
 
-fn pop_species_from_seed(seed: Vec<Rc<RefCell<Specie>>>) -> Vec<Rc<RefCell<Specie>>>{
-    let id = 0;
-
-    let new_gen: Vec<Rc<RefCell<Specie>>> = seed.iter().map(|specie| {
-        if random(0, 100) > 95 {
-            let previous = specie.borrow().diet.to_string();
-            specie.borrow_mut().diet = Diet::random();
-            println!("diet mutation in specie {} from {} to {}", specie.borrow().id, previous, specie.borrow().diet);
-        }
-        if random(0, 100) > 90 {
-            let previous = specie.borrow().hunger_degen;
-            let mutation = (specie.borrow_mut().hunger_degen as i8 + random_signed(-5, 5)) as u16;
-            specie.borrow_mut().hunger_degen = mutation;
-            println!("hunger_degen mutation in specie {} from {} to {}", specie.borrow().id, previous, specie.borrow().hunger_degen);
-        }
-        if random(0, 100) > 90 {
-            let previous = specie.borrow().hunger_regen;
-            let mutation = (specie.borrow_mut().hunger_regen as i8 + random_signed(-5, 5)) as u16;
-            specie.borrow_mut().hunger_regen = mutation;
-            println!("hunger_regen mutation in specie {} from {} tp {}", specie.borrow().id, previous, specie.borrow().hunger_regen);
-        }
-        return specie.clone();
-    }).collect();
-
-    return new_gen
-}

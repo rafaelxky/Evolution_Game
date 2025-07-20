@@ -1,6 +1,9 @@
 use core::fmt;
+use colored::Color;
 use rand::Rng;
+use crate::colors::Colors;
 
+#[derive(PartialEq, Debug)]
 pub enum Biomes{
     DESERT,
     SNOW,
@@ -15,6 +18,21 @@ impl Biomes {
             1 => Biomes::SNOW,
             _ => Biomes::TAIGA,
         }
+    }
+    pub fn get_matching_color(&self) -> Colors{
+        match self {
+            Biomes::DESERT => Colors::YELLOW,
+            Biomes::SNOW => Colors::WHITE,
+            Biomes::TAIGA => Colors::GREEN,
+        }
+    }
+    
+    pub fn calc_camouflage(&self, camo: &Colors) -> i8 {
+        let rate = 20;
+        if self.get_matching_color() == *camo {
+            return rate;
+        }
+        return 0;
     }
 }
 

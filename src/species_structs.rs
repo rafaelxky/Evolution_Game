@@ -1,3 +1,4 @@
+use std::cell::Ref;
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Write};
 use std::path::{self, Path};
@@ -49,55 +50,39 @@ impl Specie{
     pub fn print(&self){
         println!("{} {} {} {}", self.diet, self.speed, self.hunger_regen, self.color);
     }
-}
+    pub fn pop_species(ammount: u32) -> Vec<Rc<RefCell<Specie>>>{
+        let mut species: Vec<Rc<RefCell<Specie>>> = Vec::new();
+        for i in 1..=ammount {
+            species.push(Rc::from(RefCell::new(Specie::random(i))));
+        }
+    return species;
+    }
 
-pub struct AnimalMut{
-    pub animal: Animal,
-    pub hunger_regen: u16,
-    pub hunger_degen: u16,
-    pub speed: u16,
-}
-impl AnimalMut {
-    pub fn new(specie: Rc<RefCell<Specie>>, index: u32) -> Self{
-        AnimalMut { 
-            animal: Animal::new(Rc::clone(&specie), index), 
-            hunger_regen: (specie.borrow().hunger_regen as i8 + random_signed(-4, 4)) as u16, 
-            hunger_degen: (specie.borrow().hunger_degen as i8 + random_signed(-4, 4)) as u16, 
-            speed:  (specie.borrow().speed as i8 + random_signed(-4, 4)) as u16, 
-        }
-    }
-}
+    pub fn pop_species_from_seed(seed: Vec<Rc<RefCell<Specie>>>) -> Vec<Rc<RefCell<Specie>>>{
+        let id = 0;
 
-pub struct Animal {
-    pub specie: Rc<RefCell<Specie>>,
-    pub status: Status,
-    pub hunger: u16,
-    pub id: u32,
-    pub death_reason: Option<String>,
-}
-impl Animal {
-    pub fn new(specie: Rc<RefCell<Specie>>, index: u32) -> Self{
-        Animal {
-            specie: specie,  
-            status: Status::Alive,
-            hunger: 100,
-            id: index,
-            death_reason: None, 
-        }
+        let new_gen: Vec<Rc<RefCell<Specie>>> = seed.iter().map(|specie| {
+            if random(0, 100) > 95 {
+                let previous = specie.borrow().diet.to_string();
+                specie.borrow_mut().diet = Diet::random();
+                println!("diet mutation in specie {} from {} to {}", specie.borrow().id, previous, specie.borrow().diet);
+            }
+            if random(0, 100) > 90 {
+                let previous = specie.borrow().hunger_degen;
+                let mutation = (specie.borrow_mut().hunger_degen as i8 + random_signed(-5, 5)) as u16;
+                specie.borrow_mut().hunger_degen = mutation;
+                println!("hunger_degen mutation in specie {} from {} to {}", specie.borrow().id, previous, specie.borrow().hunger_degen);
+            }
+            if random(0, 100) > 90 {
+                let previous = specie.borrow().hunger_regen;
+                let mutation = (specie.borrow_mut().hunger_regen as i8 + random_signed(-5, 5)) as u16;
+                specie.borrow_mut().hunger_regen = mutation;
+                println!("hunger_regen mutation in specie {} from {} tp {}", specie.borrow().id, previous, specie.borrow().hunger_regen);
+            }
+            return specie.clone();
+        }).collect();
+
+        return new_gen
     }
-    pub fn print(&self){
-        print!("animal {} is a {} and is {} ",self.id.to_string().truecolor(0, 255, 255), self.specie.borrow().diet, self.status);
-        match &self.death_reason {
-            Some(death_reason) => {print!("due to {}\n", death_reason);},
-            None => {print!("\n");},
-        }
-        println!("specie{}, speed {}, hunger {}, hunger_Regen {}, hunger_Degen {}, start_pop {}", 
-        self.specie.borrow().id.to_string().truecolor(255, 0, 255),
-        self.specie.borrow().speed.to_string().truecolor(255, 0, 255), 
-        self.hunger.to_string().truecolor(255, 0, 255),
-        self.specie.borrow().hunger_regen.to_string().truecolor(255, 0, 255),
-        self.specie.borrow().hunger_degen.to_string().truecolor(255, 0, 255),
-        self.specie.borrow().start_pop.to_string().truecolor(255, 0, 255),
-    );
-    }
+
 }

@@ -6,10 +6,13 @@ use core::fmt;
 use std::{cell::RefCell, fmt::format, iter::Cycle, rc::Rc, sync::Mutex};
 use colored::{Colorize};
 use rand::{rand_core::le, Rng};
-
+use once_cell::sync::Lazy;
+use crate::Biomes;
 use crate::species_structs::*;
 use crate::rng::*;
+use crate::animal_struct::Animal;
 
+static Biome: Lazy<Mutex<Biomes>> = Lazy::new(|| Mutex::new(Biomes::get_random()));
 
 pub fn pop_animals(species: Vec<Rc<RefCell<Specie>>>)-> Vec<Rc<RefCell<Animal>>>{
     let mut index: u32 = 0;
@@ -31,12 +34,16 @@ pub fn was_eaten_old(prey_speed: u8, predator_speed: u8) -> bool{
     false
 }
 pub fn was_eaten(prey: &Animal, predator: &Animal) -> bool{
-    let prey_speed = prey.specie.borrow().speed;
-    let predator_speed = predator.specie.borrow().speed;
-    let prey_color = &prey.specie.borrow().color;
-    let predator_color = &predator.specie.borrow().color;
+    let prey_specie = prey.specie.borrow();
+    let predator_specie= predator.specie.borrow();
 
-    let chance = 50 + (predator_speed as i8 - prey_speed as i8) / 2 + (0);
+    let prey_speed = prey_specie.speed;
+    let predator_speed = predator_specie.speed;
+    let prey_color = &prey_specie.color;
+    let predator_color = &predator_specie.color;
+    let biome = Biome.lock().unwrap();
+
+    let chance = 50 + (predator_speed as i8 - prey_speed as i8) / 2 + (biome.calc_camouflage(predator_color) - biome.calc_camouflage(prey_color));
     if chance > random(0, 100) as i8 {
         return true;
     }

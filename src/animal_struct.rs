@@ -41,7 +41,7 @@ impl Animal {
         }
     }
     pub fn print(&self){
-        print!("animal {} is a {} and is {} ",self.id.to_string().truecolor(0, 255, 255), self.specie.borrow().diet, self.status);
+        print!("animal {} is a {} {} and is {} ",self.id.to_string().truecolor(0, 255, 255), self.specie.borrow().color ,self.specie.borrow().diet, self.status);
         match &self.death_reason {
             Some(death_reason) => {print!("due to {}\n", death_reason);},
             None => {print!("\n");},
