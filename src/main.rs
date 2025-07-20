@@ -16,13 +16,20 @@ mod rng;
 use rng::*;
 mod species_handler;
 use species_handler::*;
+mod diets;
+
+use crate::diets::Diet;
+use crate::biomes::Biomes;
+use crate::status::Status;
+mod colors;
+mod biomes;
+mod status;
 
 static CYCLES: Mutex<u32> = Mutex::new(0);
 
 fn main() {
-//let species: Vec<Rc<RefCell<Specie>>> = pop_species(random(1, 10) as u32);
-//let species = specie_from_file("species.json");
 let species = pop_species_from_seed(specie_from_file("species.json"));
+let biome = Biomes::get_random();
 
 let cloned_species: Vec<Specie> = species.iter()
     .map(|specie| specie.borrow().clone())
@@ -74,7 +81,7 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 
                 if other.specie.borrow().diet == Diet::Vegetarian && other.status == Status::Alive {
                     // if carnivore is able to catch vegetarian
-                    if was_eaten(other.specie.borrow().speed, animal.specie.borrow().speed){
+                    if was_eaten(&other, &animal){
                     println!(
                         "Animal {} ate animal {}",
                         animal.id.to_string().truecolor(0, 255, 255),
