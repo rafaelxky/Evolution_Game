@@ -5,6 +5,7 @@ use crate::models::diets::Diet;
 use crate::models::status::Status;
 
 use crate::models::species_structs::Specie;
+use crate::services::ecosystem_service;
 
 pub struct Animal {
     pub specie: Rc<RefCell<Specie>>,
@@ -51,16 +52,39 @@ impl Animal {
         self.hunger.to_string().truecolor(255, 0, 255));
     }
 
-    pub fn isAlive(&self) -> bool{
+    pub fn is_alive(&self) -> bool{
         self.death_reason.is_none()
     }
-    pub fn isCarnivore(&self) -> bool {
+    pub fn is_carnivore(&self) -> bool {
         self.specie.borrow().diet == Diet::Carnivore
     } 
-    pub fn isHerbivore(&self) -> bool {
+    pub fn is_herbivore(&self) -> bool {
         self.specie.borrow().diet == Diet::Vegetarian
     }
-    pub fn isOmnivore(&self) -> bool {
+    pub fn is_omnivore(&self) -> bool {
         self.specie.borrow().diet == Diet::Omnivore
+    }
+
+    pub fn can_eat(&self, prey: &Animal) -> bool {
+        self.specie.borrow().diet.can_eat(prey)
+    }
+
+    pub fn try_eat(&mut self, prey: &mut Animal) -> bool{
+        let other = prey;
+        let animal = self;
+        if ecosystem_service::was_eaten(&other, &animal){
+            println!(
+                "Animal {} ate animal {}",
+                animal.id.to_string().truecolor(0, 255, 255),
+                other.id.to_string().truecolor(0, 255, 255)
+            );
+            other.death_reason = Some(format!("behing eaten by animal {}", animal.id.to_string().truecolor(0, 255, 255)));
+            other.status = Status::Dead;
+            let hunger_regen = animal.specie.borrow().hunger_regen;
+            animal.hunger += hunger_regen;
+            animal.print_hunger();
+            return true;
+        }
+        return false;
     }
 }

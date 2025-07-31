@@ -3,6 +3,8 @@ use core::fmt;
 use colored::{Colorize};
 use rand::{Rng};
 
+use crate::models::animal_struct::Animal;
+
 #[derive(PartialEq, Serialize, Deserialize, Clone)]
 pub enum Diet{
     Carnivore,
@@ -30,4 +32,13 @@ impl  Diet {
             _ => Diet::Carnivore,
         }
     }
+
+    pub fn can_eat(&self, prey: &Animal) -> bool {
+        match self {
+            Self::Carnivore => prey.is_alive() && prey.is_herbivore(),
+            Self::Omnivore => false,
+            Self::Vegetarian => false,
+        }
+    }
+
 }

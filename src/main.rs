@@ -55,7 +55,7 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 
             {
                 let animal = animal_rc.borrow();
-                if !animal.isCarnivore() || animal.isAlive() {
+                if !animal.is_carnivore() || !animal.is_alive() {
                     continue;
                 }
             } 
@@ -68,23 +68,13 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 
                 let mut other = animals[j].borrow_mut();
 
-                if other.isHerbivore() && other.isAlive() {
-                    if was_eaten(&other, &animal){
-                    println!(
-                        "Animal {} ate animal {}",
-                        animal.id.to_string().truecolor(0, 255, 255),
-                        other.id.to_string().truecolor(0, 255, 255)
-                    );
-                    other.death_reason = Some(format!("behing eaten by animal {}", animal.id.to_string().truecolor(0, 255, 255)));
-                    other.status = Status::Dead;
-                    let hunger_regen = animal.specie.borrow().hunger_regen;
-                    animal.hunger += hunger_regen;
-                    ate = true;
-                  
-                    animal.print_hunger();
+                if animal.can_eat(&other) {
                     
-                    break;
+                    if animal.try_eat(&mut other) {
+                        ate = true;
+                        break;
                     }
+
                     animal_service::print_ran_from(&animal, &other);
 
                     let total_hunger = animal_service::calc_hunger(&animal);
@@ -105,7 +95,7 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 
                     let mut other = animals[j].borrow_mut();
 
-                    if other.isCarnivore() && other.isAlive() {
+                    if other.is_carnivore() && other.is_alive() {
 
                         animal_service::print_mad(&animal, &other);
 
@@ -129,12 +119,12 @@ fn play(animals: Vec<Rc<RefCell<Animal>>>) {
 
         let herbivore_alive = animals.iter().any(|a| {
             let a = a.borrow();
-            a.isHerbivore() && a.isAlive()
+            a.is_herbivore() && a.is_alive()
         });
 
         let carnivore_alive = animals.iter().any(|a| {
             let a = a.borrow();
-            a.isCarnivore() && a.isAlive()
+            a.is_carnivore() && a.is_alive()
         });
 
         if !herbivore_alive {
