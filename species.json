@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "diet": "Carnivore",
+    "hunger_regen": 9,
+    "hunger_degen": 84,
+    "speed": 72,
+    "start_pop": 1,
+    "color": "WHITE"
+  },
+  {
+    "id": 2,
+    "diet": "Carnivore",
+    "hunger_regen": 71,
+    "hunger_degen": 46,
+    "speed": 30,
+    "start_pop": 7,
+    "color": "YELLOW"
+  },
+  {
+    "id": 3,
+    "diet": "Carnivore",
+    "hunger_regen": 14,
+    "hunger_degen": 52,
+    "speed": 42,
+    "start_pop": 5,
+    "color": "WHITE"
+  },
+  {
+    "id": 4,
+    "diet": "Omnivore",
+    "hunger_regen": 80,
+    "hunger_degen": 71,
+    "speed": 71,
+    "start_pop": 3,
+    "color": "YELLOW"
+  }
+]

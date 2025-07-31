@@ -3,7 +3,7 @@ use std::io::{Write};
 use std::path::{Path};
 use std::{cell::RefCell, rc::Rc};
 
-use crate::species_structs::*;
+use crate::models::species_structs::*;
 
 pub fn write_to_file<P: AsRef<Path>>(path: P, content: &str) {
     let mut file = OpenOptions::new()

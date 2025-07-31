@@ -1,17 +1,9 @@
-use std::cell::Ref;
-use std::fs::{File, OpenOptions};
-use std::io::{self, BufRead, BufReader, Write};
-use std::path::{self, Path};
 use serde::{Serialize, Deserialize};
-use core::fmt;
-use std::{cell::RefCell, fmt::format, iter::Cycle, rc::Rc, sync::Mutex};
-use colored::{Colorize};
-use rand::{rand_core::le, Rng};
+use std::{cell::RefCell, rc::Rc};
 
-use crate::{colors, rng::*};
-use crate::colors::Colors;
-use crate::diets::Diet;
-use crate::status::Status;
+use crate::{services::rng_services::*};
+use crate::models::colors::Colors;
+use crate::models::diets::Diet;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Specie {
@@ -77,7 +69,7 @@ impl Specie{
                 let previous = specie.borrow().hunger_regen;
                 let mutation = (specie.borrow_mut().hunger_regen as i8 + random_signed(-5, 5)) as u16;
                 specie.borrow_mut().hunger_regen = mutation;
-                println!("hunger_regen mutation in specie {} from {} tp {}", specie.borrow().id, previous, specie.borrow().hunger_regen);
+                println!("hunger_regen mutation in specie {} from {} to {}", specie.borrow().id, previous, specie.borrow().hunger_regen);
             }
             return specie.clone();
         }).collect();

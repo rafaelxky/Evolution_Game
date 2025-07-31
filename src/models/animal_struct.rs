@@ -1,27 +1,10 @@
 use std::{cell::RefCell, rc::Rc};
 use colored::{Colorize};
+use crate::models::death_reasons::DeathReason;
+use crate::models::diets::Diet;
+use crate::models::status::Status;
 
-use crate::{rng::*};
-use crate::status::Status;
-
-use crate::species_structs::Specie;
-
-pub struct AnimalMut{
-    pub animal: Animal,
-    pub hunger_regen: u16,
-    pub hunger_degen: u16,
-    pub speed: u16,
-}
-impl AnimalMut {
-    pub fn new(specie: Rc<RefCell<Specie>>, index: u32) -> Self{
-        AnimalMut { 
-            animal: Animal::new(Rc::clone(&specie), index), 
-            hunger_regen: (specie.borrow().hunger_regen as i8 + random_signed(-4, 4)) as u16, 
-            hunger_degen: (specie.borrow().hunger_degen as i8 + random_signed(-4, 4)) as u16, 
-            speed:  (specie.borrow().speed as i8 + random_signed(-4, 4)) as u16, 
-        }
-    }
-}
+use crate::models::species_structs::Specie;
 
 pub struct Animal {
     pub specie: Rc<RefCell<Specie>>,
@@ -54,5 +37,30 @@ impl Animal {
         self.specie.borrow().hunger_degen.to_string().truecolor(255, 0, 255),
         self.specie.borrow().start_pop.to_string().truecolor(255, 0, 255),
     );
+    }
+
+    pub fn starve(&mut self){
+        println!("Animal {} starved to death!", self.id.to_string().truecolor(0, 255, 255));
+        self.death_reason = Some("starvation".to_string());
+        self.status = Status::Dead;
+        self.hunger = 0;
+    }
+    pub fn print_hunger(&self){
+        println!("Animal {} hunger is now {}",
+        self.id.to_string().truecolor(0, 255, 255), 
+        self.hunger.to_string().truecolor(255, 0, 255));
+    }
+
+    pub fn isAlive(&self) -> bool{
+        self.death_reason.is_none()
+    }
+    pub fn isCarnivore(&self) -> bool {
+        self.specie.borrow().diet == Diet::Carnivore
+    } 
+    pub fn isHerbivore(&self) -> bool {
+        self.specie.borrow().diet == Diet::Vegetarian
+    }
+    pub fn isOmnivore(&self) -> bool {
+        self.specie.borrow().diet == Diet::Omnivore
     }
 }

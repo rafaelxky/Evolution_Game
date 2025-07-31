@@ -1,18 +1,11 @@
-use std::fs::{File, OpenOptions};
-use std::io::{self, BufRead, BufReader, Write};
-use std::path::{self, Path};
-use serde::{Serialize, Deserialize};
-use core::fmt;
-use std::{cell::RefCell, fmt::format, iter::Cycle, rc::Rc, sync::Mutex};
-use colored::{Colorize};
-use rand::{rand_core::le, Rng};
+use std::{cell::RefCell, rc::Rc, sync::Mutex};
 use once_cell::sync::Lazy;
-use crate::Biomes;
-use crate::species_structs::*;
-use crate::rng::*;
-use crate::animal_struct::Animal;
+use crate::models::biomes::Biomes;
+use crate::models::species_structs::*;
+use crate::services::rng_services::*;
+use crate::models::animal_struct::Animal;
 
-static Biome: Lazy<Mutex<Biomes>> = Lazy::new(|| Mutex::new(Biomes::get_random()));
+pub static Biome: Lazy<Mutex<Biomes>> = Lazy::new(|| Mutex::new(Biomes::get_random()));
 
 pub fn pop_animals(species: Vec<Rc<RefCell<Specie>>>)-> Vec<Rc<RefCell<Animal>>>{
     let mut index: u32 = 0;
@@ -26,13 +19,6 @@ pub fn pop_animals(species: Vec<Rc<RefCell<Specie>>>)-> Vec<Rc<RefCell<Animal>>>
     return animals;
 }
 
-pub fn was_eaten_old(prey_speed: u8, predator_speed: u8) -> bool{
-    let chance = 50 + (predator_speed as i8 - prey_speed as i8) / 2;
-    if chance > random(0, 100) as i8 {
-        return true;
-    }
-    false
-}
 pub fn was_eaten(prey: &Animal, predator: &Animal) -> bool{
     let prey_specie = prey.specie.borrow();
     let predator_specie= predator.specie.borrow();

@@ -1,7 +1,6 @@
 use core::fmt;
-use colored::Color;
 use rand::Rng;
-use crate::colors::Colors;
+use crate::models::colors::Colors;
 
 #[derive(PartialEq, Debug)]
 pub enum Biomes{
@@ -13,11 +12,12 @@ pub enum Biomes{
 impl Biomes {
     pub fn get_random() -> Self {
         let mut rng = rand::rng();
-        match rng.random_range(0..3) {
+        let random_biome = match rng.random_range(0..3) {
             0 => Biomes::DESERT,
             1 => Biomes::SNOW,
             _ => Biomes::TAIGA,
-        }
+        };
+        return random_biome;
     }
     pub fn get_matching_color(&self) -> Colors{
         match self {
@@ -35,8 +35,6 @@ impl Biomes {
         return 0;
     }
 }
-
-
 
 impl fmt::Display for Biomes {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
