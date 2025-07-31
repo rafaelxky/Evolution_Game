@@ -6,17 +6,15 @@ use services::file_service::*;
 use crate::models::species_structs::*;
 use crate::services::{animal_service, ecosystem_service::*};
 
-use crate::models::diets::Diet;
 use crate::models::status::Status;
 mod models;
 use crate::models::animal_struct::Animal;
-use crate::services::animal_service::*;
 
 static CYCLES: Mutex<u32> = Mutex::new(0);
 
 fn main() {
     
-println!("Biome {}", services::ecosystem_service::Biome.lock().unwrap());
+println!("Biome {}", services::ecosystem_service::Biome.lock().unwrap()); // safe to unwrap since it behing accessed in a single thread
 
 let species = Specie::pop_species_from_seed(specie_from_file("species.json"));
 
@@ -27,7 +25,7 @@ let cloned_species: Vec<Specie> = species.iter()
     .collect();
 
 write_to_file("species.json", &serde_json::to_string_pretty(&cloned_species).unwrap());
-println!("{}", serde_json::to_string_pretty(&cloned_species).unwrap());
+println!("{}", serde_json::to_string_pretty(&cloned_species).expect("Error, invalid json!"));
 
     let mut animals: Vec<Rc<RefCell<Animal>>> = pop_animals(species);
 
@@ -45,31 +43,28 @@ fn print_animals(animals: Vec<Rc<RefCell<Animal>>>){
 fn play(animals: Vec<Rc<RefCell<Animal>>>) {
     println!("Starting");
 
-    let mut cycles = CYCLES.lock().unwrap();
+    let mut cycles_counter = CYCLES.lock().unwrap();
     loop {
-        *cycles = *cycles + 1;
+        *cycles_counter = *cycles_counter + 1;
         let len = animals.len();
 
         for i in 0..len {
             let animal_rc = animals[i].clone();
-
-            {
-                let animal = animal_rc.borrow();
-                if !animal.is_carnivore() || !animal.is_alive() {
-                    continue;
-                }
-            } 
-
             let mut animal = animal_rc.borrow_mut();
 
+            if !animal.is_carnivore() || !animal.is_alive() {
+                continue;
+            }
+
             let mut ate = false;
+
             for j in 0..len {
                 if i == j { continue; }
 
                 let mut other = animals[j].borrow_mut();
 
                 if animal.can_eat(&other) {
-                    
+
                     if animal.try_eat(&mut other) {
                         ate = true;
                         break;
